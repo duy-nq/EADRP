@@ -88,20 +88,21 @@ def fill_data(data: pd.DataFrame):
 
     data[['city','motor_way','country_roads','A/C']] = pd.get_dummies(data[['city','motor_way','country_roads','A/C']], drop_first=True)
 
-    data.to_csv("Cleaned Data.csv",index=False)
+    return data
 
-def main():
+def process():
     config = get_config()
     
     path = config.dataset
     df = pd.read_csv(path,encoding="ISO-8859-1")
     
-    clean_data = remove_null(remove_and_cast(df))
+    return fill_data(remove_null(remove_and_cast(df)))
 
-    fill_data(clean_data)
+def main():
+    final_data = process()
+
+    final_data.to_csv("final_data.csv",index=False)
+
 
 if __name__ == '__main__':
     main()
-
-
-
