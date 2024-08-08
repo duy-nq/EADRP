@@ -90,16 +90,15 @@ def fill_data(data: pd.DataFrame):
 
     return data
 
-def process():
-    config = get_config()
-    
-    path = config.dataset
-    df = pd.read_csv(path,encoding="ISO-8859-1")
+def process(file_path):  
+    df = pd.read_csv(file_path,encoding="ISO-8859-1")
     
     return fill_data(remove_null(remove_and_cast(df)))
 
 def main():
-    final_data = process()
+    config = get_config()
+
+    final_data = process(config.car_name)
 
     final_data.to_csv("final_data.csv",index=False)
 
