@@ -15,7 +15,7 @@ import numpy as np
 
 config = get_config()
 
-FILE_PATH = './dataset/{name}.csv'.format(name=config.car_name)
+FILE_PATH = config.dataset
 OUT_PATH = './model/{name}'.format(name=config.car_name)
 SEED = config.seed
 NUM_FOLDS = config.num_folds
