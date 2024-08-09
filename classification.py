@@ -194,7 +194,9 @@ def gs_train(models, X_train, y_train, is_plot: bool):
 
     return opt_model
 
-def test(model, X_test, y_test):
+def test(model, X_train, y_train, X_test, y_test):
+    model.fit(X_train, y_train)
+    
     y_pred_test = model.predict(X_test)
 
     return accuracy_score(y_pred_test, y_test)
@@ -214,7 +216,7 @@ def main():
     data = process_data()
     X_train, y_train, X_test, y_test = split_data(data)
 
-    lr = LogisticRegression(n_jobs = -1)
+    lr = LogisticRegression(n_jobs = -1, solver='saga')
     svm = SVC(random_state = SEED)
     rf =  RandomForestClassifier(n_jobs = -1, random_state = SEED)
     ab = AdaBoostClassifier(random_state = SEED)
