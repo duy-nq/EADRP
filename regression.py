@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 from sklearn.linear_model import LinearRegression, ElasticNet
 from sklearn.ensemble import AdaBoostRegressor, RandomForestRegressor
-from sklearn.svm import SVC
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -21,10 +20,10 @@ OUT_PATH = './model/{name}'.format(name=config.car_name)
 SEED = config.seed
 NUM_FOLDS = config.num_folds
 MODEL_LIST = [
-    'Logistic Regression',
-    'SVC',
-    'Random Forest C',
-    'AdaBoost C'
+    'Linear Regression',
+    'Elastic Net',
+    'Random Forest R',
+    'AdaBoost R'
 ]
 
 LN_PARAMS = {
@@ -226,7 +225,8 @@ def main():
     models = [ln, elas, rf, ab]
 
     init_models = basic_train(models, X_train, y_train, is_plot=False)
-    ft_models = gs_train(init_models, X_train, y_train, is_plot=False)      
+    lrcv = cv_train(init_models[0], X_train, y_train, is_plot=False)
+    ft_models = lrcv + gs_train(init_models[1:], X_train, y_train, is_plot=False)    
 
     # 0 is Linear Regression
     # 1 is Elastic Net
