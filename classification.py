@@ -12,6 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pickle
 
 config = get_config()
 
@@ -201,6 +202,10 @@ def test(model, X_train, y_train, X_test, y_test):
 
     return accuracy_score(y_pred_test, y_test)
 
+def save_model(model_name, model):
+    with open('./model/{}.pkl'.format(model_name), 'wb') as f:
+        pickle.dump(model, f)
+
 def final_plot(mse_values):
     plt.figure(figsize=(10, 6))
     plt.bar(MODEL_LIST, mse_values, color='skyblue')
@@ -232,7 +237,12 @@ def main():
     # 3 is AdaBoost Classifier
     final_result = []
     for model in ft_models:
-        final_result.append(test(model, X_test, y_test))
+        final_result.append(test(model, X_train, y_train, X_test, y_test))
+
+    save_model('ev_golf', ft_models[0])
+    save_model('mitsubishi', ft_models[1])
+    save_model('renault', ft_models[2])
+    save_model('tesla', ft_models[3])
 
 
 if __name__ == '__main__':
