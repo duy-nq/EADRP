@@ -1,6 +1,6 @@
 from config import get_config
 
-from sklearn.base import accuracy_score
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score, train_test_split, KFold
 from sklearn.preprocessing import MinMaxScaler
 
