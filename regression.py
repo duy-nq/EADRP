@@ -65,11 +65,11 @@ def process_data():
 def split_data(df: pd.DataFrame):
     def scaler_x(data):
         scaler = MinMaxScaler()
-        return scaler.fit_transform(data)
+        return scaler.fit_transform(data), scaler
     
     def scaler_y(data):
         scaler = MinMaxScaler()
-        return scaler.fit_transform(data.reshape(-1, 1))
+        return scaler.fit_transform(data.reshape(-1, 1)), scaler
     
     train, test  = train_test_split(df, test_size = 0.2, random_state = SEED)
 
@@ -82,7 +82,12 @@ def split_data(df: pd.DataFrame):
     y_train = y_train.values
     y_test = y_test.values
 
-    return scaler_x(X_train), scaler_y(y_train), scaler_x(X_test), scaler_y(y_test)
+    X_train_scaled, scaler_x_train = scaler_x(X_train)
+    y_train_scaled, scaler_y_train = scaler_y(y_train)
+    X_test_scaled, _ = scaler_x(X_test)
+    y_test_scaled, _ = scaler_y(y_test)
+
+    return X_train_scaled, y_train_scaled, X_test_scaled, y_test_scaled, scaler_x_train, scaler_y_train
 
 def basic_train(models, X_train, y_train, is_plot: bool):
     def plot():
@@ -202,6 +207,10 @@ def save_model(model_name, model):
     with open(OUT_PATH + '/{}.pkl'.format(model_name), 'wb') as f:
         pickle.dump(model, f)
 
+def save_scaler(scaler_name, scaler):
+    with open(OUT_PATH + '/{}.pkl'.format(scaler_name), 'wb') as f:
+        pickle.dump(scaler, f)
+
 def final_plot(mse_values):
     plt.figure(figsize=(10, 6))
     plt.bar(MODEL_LIST, mse_values, color='skyblue')
@@ -215,7 +224,7 @@ def final_plot(mse_values):
 
 def main():
     data = process_data()
-    X_train, y_train, X_test, y_test = split_data(data)
+    X_train, y_train, X_test, y_test, scaler_x, scaler_y = split_data(data)
 
     ln = LinearRegression()
     elas = ElasticNet(random_state = SEED)
@@ -239,6 +248,8 @@ def main():
     save_model('elas', ft_models[1])
     save_model('rf', ft_models[2])
     save_model('ab', ft_models[3])
+    save_scaler('scaler_x', scaler_x)
+    save_scaler('scaler_y', scaler_y)
 
 
 if __name__ == '__main__':
