@@ -166,7 +166,7 @@ def gs_train(models, X_train, y_train, is_plot: bool):
 
     def plot():
         optimized_scores = pd.DataFrame({'Optimized Scores':[elas_best_score, rf_best_score,ab_best_score] })
-        optimized_scores.index = ['Linear Reg', 'ELAS', 'Random Forest', 'Ada Boost']
+        optimized_scores.index = ['ELAS', 'Random Forest', 'Ada Boost']
         optimized_scores = optimized_scores.sort_values(by = 'Optimized Scores')
         optimized_scores
         plt.figure(figsize=(15, 5))
@@ -199,15 +199,15 @@ def test(model, X_train, y_train, X_test, y_test):
     return mean_absolute_error(y_pred_test, y_test)
 
 def save_model(model_name, model):
-    with open('./model/{}.pkl'.format(model_name), 'wb') as f:
+    with open(OUT_PATH + '/{}.pkl'.format(model_name), 'wb') as f:
         pickle.dump(model, f)
 
 def final_plot(mse_values):
     plt.figure(figsize=(10, 6))
     plt.bar(MODEL_LIST, mse_values, color='skyblue')
     plt.xlabel('Models')
-    plt.ylabel('Mean Squared Error (MSE)')
-    plt.title('Mean Squared Error Comparison of Models')
+    plt.ylabel('Mean Absolute Error (MAE)')
+    plt.title('Mean Absolute Error Comparison of Models')
     plt.xticks(rotation=45)  
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
@@ -225,8 +225,7 @@ def main():
     models = [ln, elas, rf, ab]
 
     init_models = basic_train(models, X_train, y_train, is_plot=False)
-    lrcv = cv_train(init_models[0], X_train, y_train, is_plot=False)
-    ft_models = lrcv + gs_train(init_models[1:], X_train, y_train, is_plot=False)    
+    ft_models = [init_models[0]] + gs_train(init_models, X_train, y_train, is_plot=False)    
 
     # 0 is Linear Regression
     # 1 is Elastic Net
