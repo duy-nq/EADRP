@@ -16,7 +16,7 @@ import pickle
 config = get_config()
 
 FILE_PATH = config.dataset
-OUT_PATH = './model/{name}'.format(name=config.car_name)
+OUT_PATH = './model_regression_v1/{name}'.format(name=config.car_name)
 SEED = config.seed
 NUM_FOLDS = config.num_folds
 MODEL_LIST = [
@@ -63,14 +63,9 @@ def process_data():
     return df
 
 def split_data(df: pd.DataFrame):
-    def scaler_x(data):
-        scaler = MinMaxScaler()
-        return scaler.fit_transform(data), scaler
-    
-    def scaler_y(data):
-        scaler = MinMaxScaler()
-        return scaler.fit_transform(data.reshape(-1, 1)), scaler
-    
+    scaler_x = MinMaxScaler()
+    scaler_y = MinMaxScaler()
+
     train, test  = train_test_split(df, test_size = 0.2, random_state = SEED)
 
     y_train = train['trip_distance(km)']
@@ -82,12 +77,12 @@ def split_data(df: pd.DataFrame):
     y_train = y_train.values
     y_test = y_test.values
 
-    X_train_scaled, scaler_x_train = scaler_x(X_train)
-    y_train_scaled, scaler_y_train = scaler_y(y_train)
-    X_test_scaled, _ = scaler_x(X_test)
-    y_test_scaled, _ = scaler_y(y_test)
+    X_train_scaled = scaler_x.fit_transform(X_train)
+    X_test_scaled = scaler_x.transform(X_test)
+    y_train_scaled = scaler_y.fit_transform(y_train.reshape(-1, 1))
+    y_test_scaled = scaler_y.transform(y_test.reshape(-1, 1))
 
-    return X_train_scaled, y_train_scaled, X_test_scaled, y_test_scaled, scaler_x_train, scaler_y_train
+    return X_train_scaled, y_train_scaled, X_test_scaled, y_test_scaled, scaler_x, scaler_y
 
 def basic_train(models, X_train, y_train, is_plot: bool):
     def plot():
@@ -243,6 +238,8 @@ def main():
     final_result = []
     for model in ft_models:
         final_result.append(test(model, X_train, y_train, X_test, y_test))
+
+    final_plot(final_result)
 
     save_model('ln', ft_models[0])
     save_model('elas', ft_models[1])
