@@ -60,7 +60,7 @@ def download_file(url):
         try:
             table = driver.find_element_by_xpath(xpath="//table[@class='itemtable']/tbody")
             rows = table.find_elements_by_xpath(xpath=".//tr")
-            # print(rows[0].get_attribute(name="innerHTML"))
+            print(rows[0].get_attribute(name="innerHTML"))
         except:
             print("we have reached the end!")
             driver.close()
